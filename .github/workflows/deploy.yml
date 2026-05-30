@@ -28,6 +28,7 @@ jobs:
 
             REPO_DIR="$HOME/cluster"
             REPO_URL="https://github.com/CandyOrganization/file-service.git"
+            COMPOSE_DIR="$HOME"  # docker-compose.yml лежит в $HOME/cluster
 
             echo "🚀 Starting deployment at $(date)"
 
@@ -41,13 +42,20 @@ jobs:
               cd "$REPO_DIR"
             fi
 
-            if [ -f "$HOME/.env" ]; then
-              echo "📄 Using .env from $HOME/.env"
-              docker-compose --env-file "$HOME/.env" up -d --build file-service
-            else
-              echo "⚠️ No .env file found in $HOME, proceeding without it"
+             # Переходим в папку с docker-compose.yml
+            cd "$COMPOSE_DIR"
+
+            # Проверяем существование docker-compose.yml
+            if [ ! -f "docker-compose.yml" ]; then
+              echo "❌ docker-compose.yml not found in $COMPOSE_DIR"
               exit 1
             fi
-            
-            docker image prune -f
-            echo "✅ Done!"
+
+            # Пересобираем и перезапускаем только file-service
+            if [ -f "$HOME/.env" ]; then
+              echo "📄 Using .env from $HOME/.env"
+              docker compose --env-file "$HOME/.env" up -d --build file-service
+            else
+              echo "⚠️ No .env file found, proceeding without it"
+              docker compose up -d --build file-service
+            fi
