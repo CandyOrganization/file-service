@@ -1,0 +1,53 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          command_timeout: 30m
+          script: |
+            set -e
+
+            REPO_DIR="$HOME/cluster"
+            REPO_URL="https://github.com/CandyOrganization/file-service.git"
+
+            echo "🚀 Starting deployment at $(date)"
+
+            if [ -d "$REPO_DIR" ]; then
+              cd "$REPO_DIR"
+              git fetch origin
+              git reset --hard origin/main
+              git clean -fd
+            else
+              git clone "$REPO_URL" "$REPO_DIR"
+              cd "$REPO_DIR"
+            fi
+
+            if [ -f "$HOME/.env" ]; then
+              echo "📄 Using .env from $HOME/.env"
+              docker-compose --env-file "$HOME/.env up -d --build file-service
+            else
+              echo "⚠️ No .env file found in $HOME, proceeding without it"
+              exit 1
+            fi
+            
+            docker image prune -f
+            echo "✅ Done!"
