@@ -43,7 +43,7 @@ jobs:
 
             if [ -f "$HOME/.env" ]; then
               echo "📄 Using .env from $HOME/.env"
-              docker-compose --env-file "$HOME/.env up -d --build file-service
+              docker-compose --env-file "$HOME/.env" up -d --build file-service
             else
               echo "⚠️ No .env file found in $HOME, proceeding without it"
               exit 1
