@@ -34,7 +34,7 @@ jobs:
             if [ -d "$REPO_DIR" ]; then
               cd "$REPO_DIR"
               git fetch origin
-              git reset --hard origin/main
+              git reset --hard origin/master
               git clean -fd
             else
               git clone "$REPO_URL" "$REPO_DIR"
