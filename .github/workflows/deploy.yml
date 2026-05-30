@@ -54,8 +54,8 @@ jobs:
             # Пересобираем и перезапускаем только file-service
             if [ -f "$HOME/.env" ]; then
               echo "📄 Using .env from $HOME/.env"
-              docker compose --env-file "$HOME/.env" up -d --build file-service
+              docker-compose --env-file "$HOME/.env" up -d --build file-service
             else
               echo "⚠️ No .env file found, proceeding without it"
-              docker compose up -d --build file-service
+              docker-compose up -d --build file-service
             fi
