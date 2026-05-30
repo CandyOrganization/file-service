@@ -28,7 +28,7 @@ jobs:
 
             REPO_DIR="$HOME/cluster"
             REPO_URL="https://github.com/CandyOrganization/file-service.git"
-            COMPOSE_DIR="$HOME"  # docker-compose.yml лежит в $HOME/cluster
+            COMPOSE_DIR="$HOME/cluster"  # docker-compose.yml лежит в $HOME/cluster
 
             echo "🚀 Starting deployment at $(date)"
 
